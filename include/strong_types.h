@@ -79,6 +79,11 @@ public:
         return os;
     }
 
+    friend std::istream &operator>>(std::istream &is, Type &type) {
+        is >> type;
+        return is;
+    }
+
     Type<T, P> operator+(const Type<T, P> &other) const {
         return Type<T, P>{obj+other.obj};
     };
