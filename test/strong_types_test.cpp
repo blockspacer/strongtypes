@@ -42,18 +42,18 @@ EXPECT_EQ(sizeof(strongString), sizeof(std::string));
 }
 
 TEST(StrongTypesTest, testConstructors) {
-STRONG_TYPE(testType, std::string);
+    STRONG_TYPE(testType, std::string);
 
-const testType orig{"a"};
-const testType c1 = orig;
-const testType c2{orig};
+    const testType orig{"a"};
+    const testType c1 = orig;
+    const testType c2{orig};
 
-testType c3;
-c3 = orig;
+    testType c3;
+    c3 = orig;
 
-EXPECT_EQ(orig, c1);
-EXPECT_EQ(orig, c2);
-EXPECT_EQ(orig, c3);
+    EXPECT_EQ(orig, c1);
+    EXPECT_EQ(orig, c2);
+    EXPECT_EQ(orig, c3);
 }
 
 TEST(StrongTypesTest, testConversion) {
@@ -73,4 +73,31 @@ TEST(StrongTypesTest, testConversion) {
     std::string s = "foobar";
     conversionTestImplicit c = s;
     cmpStrings(s, c);
+}
+
+TEST(StrongTypesTest, constexprConstructable) {
+    STRONG_TYPE(constExprTester, int);
+
+    constexpr constExprTester t{2};
+}
+
+class TestForwarding {
+private:
+    int _v;
+public:
+    constexpr TestForwarding(const int &a, const int &b): _v{a+b} {};
+
+    [[nodiscard]] int getSum() const {
+        return _v;
+    }
+};
+
+TEST(StrongTypesTest, testObject) {
+    STRONG_TYPE(ObjectType, TestForwarding);
+
+    ObjectType a{TestForwarding{2, 3}};
+    constexpr auto b = emplace<ObjectType, TestForwarding>(3, 4);
+
+    EXPECT_EQ(5, a.get().getSum());
+    EXPECT_EQ(7, b.get().getSum());
 }

@@ -16,16 +16,16 @@ public:
     Type() = default;
 
     template<ConversionType USE = CONVERSION, std::enable_if_t<USE != Implicit, int> = 0>
-    explicit Type(const T&& o): obj{o} {};
+    constexpr explicit Type(const T&& o): obj{o} {};
 
     template<ConversionType USE = CONVERSION, std::enable_if_t<USE == Implicit, int> = 0>
-    Type(const T&& o): obj{o} {};
+    constexpr Type(const T&& o): obj{o} {};
 
     template<ConversionType USE = CONVERSION, std::enable_if_t<USE != Implicit, int> = 0>
-    explicit Type(const T& o): obj{o} {};
+    constexpr explicit Type(const T& o): obj{o} {};
 
     template<ConversionType USE = CONVERSION, std::enable_if_t<USE == Implicit, int> = 0>
-    Type(const T& o): obj{o} {};
+    constexpr Type(const T& o): obj{o} {};
 
     Type& operator=(const Type<T, P> &other) {
         if (&other == this) {
@@ -87,6 +87,11 @@ public:
     Type<T, P> operator+(const Type<T, P> &other) const {
         return Type<T, P>{obj+other.obj};
     };
+};
+
+template<class S, class T, class ... Args>
+static constexpr S emplace(Args... args) {
+    return S(T(std::forward<Args>(args) ...));
 };
 
 #define STRONG_TYPE(name, type) using name = Type<type, struct Type##name>;
