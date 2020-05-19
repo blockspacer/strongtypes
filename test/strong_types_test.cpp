@@ -3,21 +3,21 @@
 #include <gtest/gtest.h>
 
 TEST(StrongTypesTest, testStrings) {
-Type<std::string, struct TypeA> foo{"foo"};
-Type<std::string, struct TypeA> bar{"bar"};
+strong_types::Type<std::string, struct TypeA> foo{"foo"};
+    strong_types::Type<std::string, struct TypeA> bar{"bar"};
 
 EXPECT_EQ("foo", foo.get());
 EXPECT_FALSE(foo == bar);
-EXPECT_EQ((Type<std::string, struct TypeA>{"foobar"}), foo + bar);
+EXPECT_EQ((strong_types::Type<std::string, struct TypeA>{"foobar"}), foo + bar);
 }
 
 TEST(StrongTypesTest, testInteger) {
-Type<int, struct TypeA> foo{10};
-Type<int, struct TypeA> bar{2};
+    strong_types::Type<int, struct TypeA> foo{10};
+    strong_types::Type<int, struct TypeA> bar{2};
 
 EXPECT_EQ(10, foo.get());
 EXPECT_TRUE(foo != bar);
-EXPECT_EQ((Type<int, struct TypeA>{12}), foo + bar);
+EXPECT_EQ((strong_types::Type<int, struct TypeA>{12}), foo + bar);
 }
 
 TEST(StrongTypesTest, testMacro) {
@@ -96,7 +96,7 @@ TEST(StrongTypesTest, testObject) {
     STRONG_TYPE(ObjectType, TestForwarding);
 
     ObjectType a{TestForwarding{2, 3}};
-    constexpr auto b = emplace<ObjectType, TestForwarding>(3, 4);
+    constexpr auto b = strong_types::emplace<ObjectType, TestForwarding>(3, 4);
 
     EXPECT_EQ(5, a.get().getSum());
     EXPECT_EQ(7, b.get().getSum());
