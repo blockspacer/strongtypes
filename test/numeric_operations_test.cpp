@@ -9,7 +9,7 @@ TEST(NumericOperations, arithmetics) {
     meter a{5};
     meter b{4};
     char c{3};
-    int d{100};
+    long d{100};
 
     EXPECT_EQ(meter{9}, a + b);
     EXPECT_EQ(meter{15}, a * c);

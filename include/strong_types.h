@@ -16,19 +16,21 @@ namespace strong_types {
     public:
         Type() = default;
 
-        template<ConversionType USE = CONVERSION, std::enable_if_t<USE != Implicit, int> = 0>
-        constexpr explicit Type(const T &&o): obj{o} {};
-
-        template<ConversionType USE = CONVERSION, std::enable_if_t<USE == Implicit, int> = 0>
-        constexpr Type(const T &&o): obj{o} {};
+        Type(const Type &other) = default;
 
         template<ConversionType USE = CONVERSION, std::enable_if_t<USE != Implicit, int> = 0>
-        constexpr explicit Type(const T &o): obj{o} {};
+        constexpr explicit Type(const T &&o) noexcept : obj{o} {};
 
         template<ConversionType USE = CONVERSION, std::enable_if_t<USE == Implicit, int> = 0>
-        constexpr Type(const T &o): obj{o} {};
+        constexpr Type(const T &&o) noexcept : obj{o} {};
 
-        Type &operator=(const Type<T, P> &other) {
+        template<ConversionType USE = CONVERSION, std::enable_if_t<USE != Implicit, int> = 0>
+        constexpr explicit Type(const T &o) noexcept : obj{o} {};
+
+        template<ConversionType USE = CONVERSION, std::enable_if_t<USE == Implicit, int> = 0>
+        constexpr Type(const T &o) noexcept : obj{o} {};
+
+        Type &operator=(const Type<T, P> &other) noexcept {
             if (&other == this) {
                 return *this;
             }
@@ -38,28 +40,28 @@ namespace strong_types {
         };
 
         template<ConversionType USE = CONVERSION, std::enable_if_t<USE == Explicit, int> = 0>
-        explicit operator T() const {
+        explicit operator T() const noexcept {
             return obj;
         };
 
         template<ConversionType USE = CONVERSION, std::enable_if_t<USE == Implicit, int> = 0>
-        operator T() const {
+        operator T() const noexcept {
             return obj;
         };
 
-        inline const T &get() const {
+        inline const T &get() const noexcept {
             return obj;
         };
 
-        bool operator==(const Type &rhs) const {
+        bool operator==(const Type &rhs) const noexcept {
             return obj == rhs.obj;
         }
 
-        bool operator!=(const Type &rhs) const {
+        bool operator!=(const Type &rhs) const noexcept {
             return !(rhs == *this);
         }
 
-        bool operator<(const Type &rhs) const {
+        bool operator<(const Type &rhs) const noexcept {
             return obj < rhs.obj;
         }
 
@@ -89,20 +91,20 @@ namespace strong_types {
             return Type<T, P>{obj + other.obj};
         };
 
-        template <class Integer, typename std::enable_if< std::is_integral<Integer>::value>::type* = nullptr >
+        template <class Integer, std::enable_if_t< std::is_integral<Integer>::value>* = nullptr >
         friend constexpr Type<T, P> operator*(const Type<T, P> &left, const Integer &right) {
             auto result = left;
-            for (int i = 1; i < right; ++i) {
+            for (Integer i = 1; i < right; ++i) {
                 result.obj += left.obj;
             }
 
             return result;
         };
 
-        template <class Integer, typename std::enable_if< std::is_integral<Integer>::value>::type* = nullptr >
+        template <class Integer, std::enable_if_t< std::is_integral<Integer>::value>* = nullptr >
         friend constexpr Type<T, P> operator*(const Integer &left, const Type<T, P> &right) {
             auto result = right;
-            for (int i = 1; i < left; ++i) {
+            for (Integer i = 1; i < left; ++i) {
                 result.obj += right.obj;
             }
 
